@@ -16,12 +16,12 @@ def test_hello_status_code(client):
 
 def test_hello_contains_hostname(client):
     response = client.get('/')
-    assert b'Hostname:' in response.data
+    assert b'Hostttname:' in response.data
 
 
 def test_hello_contains_version(client):
     response = client.get('/')
-    assert b'Ver. 1.0.' in response.data
+    assert b'Ver. 1.1.' in response.data
 
 
 def test_health_status_code(client):
