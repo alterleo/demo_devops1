@@ -12,7 +12,7 @@ env:
 
 jobs:
   lint-and-test:
-    runs-on: [self-hosted linux]
+    runs-on: [self-hosted, linux]
     steps:
       - uses: actions/checkout@v6
 
@@ -34,7 +34,7 @@ jobs:
 
   build-and-push:
     needs: lint-and-test
-    runs-on: [self-hosted linux]
+    runs-on: [self-hosted, linux]
     if: github.ref == 'refs/heads/main'
     permissions:
       contents: read
