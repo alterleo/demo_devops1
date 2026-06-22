@@ -61,6 +61,9 @@ jobs:
           echo "Tag latest: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
           echo "Tag sha: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v4
+        
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
