@@ -13,19 +13,29 @@ terraform {
 
 variable "project_id" {
   type        = string
-  description = "Идентификатор проекта из console.cloud.ru"
+  description = "(экспорт) Идентификатор проекта из console.cloud.ru"
 }
 
 variable "auth_key_id" {
   type        = string
-  description = "Идентификатор ключа доступа сервисного аккаунта"
+  description = "(экспорт) Идентификатор ключа доступа сервисного аккаунта"
   sensitive   = true
 }
 
 variable "auth_secret" {
   type        = string
-  description = "Секрет ключа доступа сервисного аккаунта"
+  description = "(экспорт) Секрет ключа доступа сервисного аккаунта"
   sensitive   = true
+}
+
+variable "vpc_id" {
+  type        = string
+  description = "(экспорт) Идентификатор VPC"
+}
+
+variable "user_passwd" {
+  type        = string
+  description = "(экспорт) Секрет хеша пароля пользователя ubuntu ВМ"
 }
 
 variable "vm_name" {
@@ -50,11 +60,6 @@ variable "subnet_address" {
   type        = string
   description = "CIDR подсети"
   default     = "10.0.0.0/24" # <-- ИЗМЕНИТЕ ПРИ НЕОБХОДИМОСТИ
-}
-
-variable "vpc_id" {
-  type        = string
-  description = "Идентификатор VPC"
 }
 
 variable "flavor" {
@@ -108,6 +113,7 @@ locals {
   cloud_config = templatefile("${path.module}/cloud-init.yaml.tpl", {
     ssh_public_key = file(var.ssh_public_key_path)
     vm_name        = var.vm_name
+    user_passwd = var.user_passwd
   })
 }
 
