@@ -96,10 +96,6 @@
     - name: Show listening ports
       debug:
         var: listening_ports.stdout_lines
-
-    - name: Debug - Check Docker ports
-      command: docker ps --format "table {{.Names}}\t{{.Ports}}"
-      register: docker_ports
     
     - name: Show Docker ports
       debug:

@@ -142,6 +142,59 @@ resource "cloudru_evolution_compute_subnet" "example" {
 }
 
 # =============================================================================
+# Группа безопасности
+# =============================================================================
+
+resource "cloudru_evolution_compute_security_group" "example" {
+  project_id = var.project_id
+
+  name = "tf-evo-sg"
+
+  zone_identifier = {
+    name = var.zone
+  }
+
+  description = "Группа безопасности для ВМ"
+}
+
+# =============================================================================
+# Правила группы безопасности
+# =============================================================================
+
+# HTTPS (80) — доступ отовсюду
+resource "cloudru_evolution_compute_security_group_rule" "ingress_http" {
+  security_group_id = cloudru_evolution_compute_security_group.example.id
+  direction         = "TRAFFIC_DIRECTION_INGRESS"
+  ether_type        = "ETHER_TYPE_IPV4"
+  ip_protocol       = "IP_PROTOCOL_TCP"
+  port_range        = "80:80"
+  description       = "HTTP доступ отовсюду"
+  remote_ip_prefix  = "0.0.0.0/0"
+}
+
+# Исходящий TCP
+resource "cloudru_evolution_compute_security_group_rule" "egress_tcp" {
+  security_group_id = cloudru_evolution_compute_security_group.example.id
+  direction         = "TRAFFIC_DIRECTION_EGRESS"
+  ether_type        = "ETHER_TYPE_IPV4"
+  ip_protocol       = "IP_PROTOCOL_TCP"
+  port_range        = "1:65535"
+  description       = "Разрешить весь исходящий TCP"
+  remote_ip_prefix  = "0.0.0.0/0"
+}
+
+# Исходящий UDP
+resource "cloudru_evolution_compute_security_group_rule" "egress_udp" {
+  security_group_id = cloudru_evolution_compute_security_group.example.id
+  direction         = "TRAFFIC_DIRECTION_EGRESS"
+  ether_type        = "ETHER_TYPE_IPV4"
+  ip_protocol       = "IP_PROTOCOL_UDP"
+  port_range        = "1:65535"
+  description       = "Разрешить весь исходящий UDP"
+  remote_ip_prefix  = "0.0.0.0/0"
+}
+
+# =============================================================================
 # Диск
 # =============================================================================
 
@@ -183,6 +236,12 @@ resource "cloudru_evolution_compute_interface" "example" {
   description                = "Сетевой интерфейс для ВМ"
   subnet_id                  = cloudru_evolution_compute_subnet.example.id
   interface_security_enabled = true
+
+  security_groups_identifiers = {
+    value = [{
+      id = cloudru_evolution_compute_security_group.example.id
+    }]
+  }
 
   external_ip_specs = {
     new_external_ip = true
