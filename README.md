@@ -7,7 +7,7 @@
 ## CI/CD
 1) lint-and-test. Проверки посредством flake8 и pytest
 2) build-and-push зависимая от 1) Сборка докер образа и загрузка в ghcr.io
-3) deploy. 
+3) deploy.
 
 ## Runner
 Локальный на собственном сервере.
@@ -32,5 +32,13 @@ export TF_VAR_user_passwd=$(mkpasswd -m sha-512 "YourPassword123!")
 
 ## Ansible
 На шаге deploy runner выполняет playbook:
+- установка в runner ansible;
+- выполнение playbook;
 - установка/запуск докера;
-- 
+- создание необходимой папки, копирование файлов;
+- авторизация в GitHub Container Registry и вытягивание ранее подготовленного образа;
+- выполнение compose файла;
+- проверка состояния приложения.
+
+### Nginx
+SSL сертификата и домена нет, поэтому проверка через 80 порт

@@ -13,7 +13,7 @@ env:
 jobs:
   lint-and-test:
     runs-on: [self-hosted, linux]
-    if: false
+    if: false                        # удалить после теста
     steps:
       - uses: actions/checkout@v6
 
@@ -36,7 +36,7 @@ jobs:
   build-and-push:
     needs: lint-and-test
     runs-on: [self-hosted, linux]
-    if: github.ref == 'refs/heads/main' && false
+    if: github.ref == 'refs/heads/main' && false   # удалить после теста
     permissions:
       contents: read
       packages: write
@@ -85,7 +85,9 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-  prepare-server:
+          
+  deploy:
+    # needs: build-and-push                   # раскомментировать после теста
     runs-on: [self-hosted, linux]
     if: github.ref == 'refs/heads/main'
     steps:
@@ -94,8 +96,11 @@ jobs:
       - name: Install Ansible on runner
         run: pip install ansible
 
-      - name: Run Ansible against server
+      - name: Deploy application
         run: |
           ansible-playbook -i infra/ansible/inventory.ini infra/ansible/playbook.yml
         env:
           ANSIBLE_HOST_KEY_CHECKING: "False"
+          GHCR_IMAGE: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GHCR_USER: ${{ github.actor }}
