@@ -17,7 +17,7 @@
       apt:
         name:
           - docker.io
-          - docker-compose
+          - docker-compose-v2
           - python3-docker
         state: present
 
@@ -58,29 +58,18 @@
         mode: '0644'
 
     - name: Login to GitHub Container Registry
-      docker_login:
+      community.docker.docker_login:
         registry: "{{ ghcr_registry }}"
         username: "{{ ghcr_user }}"
         password: "{{ ghcr_token }}"
       when: ghcr_token != ""
 
-    - name: Pull latest Docker images
-      docker_compose:
-        project_src: "{{ app_dir }}"
-        pull: yes
-      register: compose_pull
-
-    - name: Stop and remove old containers
-      docker_compose:
-        project_src: "{{ app_dir }}"
-        state: absent
-      when: compose_pull.changed
-
-    - name: Start application with Docker Compose
-      docker_compose:
+    - name: Pull images and restart services
+      community.docker.docker_compose_v2:
         project_src: "{{ app_dir }}"
         state: present
-        restarted: yes
+        pull: always
+        recreate: always
       register: compose_result
 
     - name: Wait for application to be healthy
