@@ -88,3 +88,30 @@
           Deployment completed!
           Docker Compose status: {{ compose_result }}
           Health check: {{ health_check.status | default('N/A') }}
+
+    - name: Debug - Check listening ports
+      command: ss -tlnp
+      register: listening_ports
+    
+    - name: Show listening ports
+      debug:
+        var: listening_ports.stdout_lines
+
+    - name: Debug - Check Docker ports
+      command: docker ps --format "table {{.Names}}\t{{.Ports}}"
+      register: docker_ports
+    
+    - name: Show Docker ports
+      debug:
+        var: docker_ports.stdout_lines
+
+    - name: Debug - Test local connection
+      uri:
+        url: http://localhost:8000
+      register: local_test
+
+    - name: Debug - Test external connection
+      uri:
+        url: http://{{ ansible_default_ipv4.address }}:8000
+      register: external_test
+      ignore_errors: yes
